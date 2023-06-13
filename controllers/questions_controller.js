@@ -27,7 +27,7 @@ module.exports.create = async function(req, res) {
 module.exports.delete = async function(req, res) {
     try {
       // Find the question by id and populate its options
-      const question = await Question.findById(req.params.id).populate('options');
+      const question = await Question.findById(req.params.id).populate('options').exec();
       if (!question) {
         // Return error response if the question is not found
         return res.status(404).json({ error: 'Question not found' });
@@ -58,7 +58,7 @@ module.exports.delete = async function(req, res) {
   module.exports.getQuestion = async function(req, res){
     try{
       //Find all Questions and Populate the Options
-      let question = await Question.find({}).populate('options').exec();
+      const question = await Question.findById(req.params.id).populate('options').exec();
       if(question){
         return res.status(200).json({question})
       }else{
