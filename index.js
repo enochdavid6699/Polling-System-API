@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const port = 8000;
 
+//Connect to Database
 const db = require('./config/mongoose');
 
 const bodyParser = require('body-parser');
