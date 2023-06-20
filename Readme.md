@@ -17,7 +17,7 @@ This is a backend API for a polling system application. It is built using Node.j
 
 ## Required Routes
 1. `/questions/create (To create a question)`
-2. `/questions/:id/options/create (To add options to a specific question)`
+2. `/options/:id/create (To add options to a specific question)`
 3. `/questions/:id/delete (To delete a question)`
 4. `/options/:id/delete (To delete an option)`
 5. `/options/:id/add_vote (To increment the count of votes)`

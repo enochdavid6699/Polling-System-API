@@ -24,36 +24,60 @@ module.exports.create = async function(req, res) {
 }
 
 // Function to delete a question
-module.exports.delete = async function(req, res) {
-    try {
-      // Find the question by id and populate its options
-      const question = await Question.findById(req.params.id).populate('options').exec();
-      if (!question) {
-        // Return error response if the question is not found
-        return res.status(404).json({ error: 'Question not found' });
-      }
+// module.exports.delete = async function(req, res) {
+//     try {
+//       // Find the question by id and populate its options
+//       const question = await Question.findById(req.params.id).populate('options').exec();
+//       if (!question) {
+//         // Return error response if the question is not found
+//         return res.status(404).json({ error: 'Question not found' });
+//       }
     
-      // Check if any option in the question has votes
-      question.options.map((o)=>{
-        if(o.votes>=1){
-        return res.status(403).json({ error: 'Cannot delete this question as it has votes' });
-        }
-      })  
+//       // Check if any option in the question has votes
+//       question.options.map((o)=>{
+//         if(o.votes>=1){
+//         return res.status(403).json({ error: 'Cannot delete this question as it has votes' });
+//         }
+//       })  
       
-      // Delete all the options of the question
-      await Option.deleteMany({ _id: { $in: question.options } });
+//       // Delete all the options of the question
+//       await Option.deleteMany({ _id: { $in: question.options } });
       
-      // Delete the question itself
-      await Question.findByIdAndDelete(req.params.id);
+//       // Delete the question itself
+//       await Question.findByIdAndDelete(req.params.id);
       
-      // Return success response with deleted question object
-      return res.status(200).json({ message: 'Question and Options deleted successfully' , data:question});
-    } catch (err) {
-      console.log(err);
-      // Return error response for any server errors
-      return res.status(500).json({ error: 'Internal server error' });
+//       // Return success response with deleted question object
+//       return res.status(200).json({ message: 'Question and Options deleted successfully' , data:question});
+//     } catch (err) {
+//       console.log(err);
+//       // Return error response for any server errors
+//       return res.status(500).json({ error: 'Internal server error' });
+//     }
+//   }
+
+module.exports.delete = async function(req, res) {
+  try {
+    const question = await Question.findById(req.params.id).populate('options').exec();
+    if (!question) {
+      return res.status(404).json({ error: 'Question not found' });
     }
+
+    // Check if any option in the question has votes
+    const hasVotes = question.options.some((o) => o.votes >= 1);
+    if (hasVotes) {
+      return res.status(403).json({ error: 'Cannot delete this question as it has votes' });
+    }
+
+    await Option.deleteMany({ _id: { $in: question.options } });
+    await Question.findByIdAndDelete(req.params.id);
+
+    return res.status(200).json({ message: 'Question and Options deleted successfully', data: question });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
+};
+
 
   module.exports.getQuestion = async function(req, res){
     try{
